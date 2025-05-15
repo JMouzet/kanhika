@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:15
+    container_name: kanhika-db
+    restart: no
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: kanhika
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+        - ./db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    networks:
+      - kanhika-net
+
+  backend:
+    build: ./backend
+    container_name: kanhika-backend
+    restart: no
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/kanhika
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${BACKEND_PORT}:8080"
+    networks:
+      - kanhika-net
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: kanhika-frontend
+    restart: no
+    ports:
+      - "${FRONTEND_PORT}:4200"
+    networks:
+      - kanhika-net
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  kanhika-net:
