@@ -2,6 +2,9 @@ package com.kanhika.repository;
 
 import com.kanhika.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -18,7 +21,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsernameIgnoreCaseAndDisabledFalse(String username);
 
     // Check if the email exists
-    // Case insensitive and user must be active
-    // Emails are not locked forever, they are freed if the user is disabled
-    boolean existsByEmailIgnoreCaseAndDisabledFalse(String email);
+    // Case insensitive and user must be active or banned
+    // Emails are freed if the user is disabled, but locked if banned
+    @Query("""
+        SELECT COUNT(u) > 0
+        FROM User u
+        WHERE u.email = :email
+        AND (u.disabled = false OR u.banned = true)
+    """)
+    boolean existsByEmailUsedOrBanned(@Param("email") String email);
 }

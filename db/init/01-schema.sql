@@ -44,6 +44,8 @@ CREATE TABLE "users" (
   "flame" int NOT NULL DEFAULT 0,
   "role" varchar(20) NOT NULL DEFAULT 'USER',
   "disabled" boolean NOT NULL DEFAULT false,
+  "banned" boolean NOT NULL DEFAULT false,
+  "ban_reason" varchar(255),
   "created_at" timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
   "updated_at" timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)
 );

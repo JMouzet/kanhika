@@ -36,6 +36,8 @@ public class User {
     private int flame;
     private String role;
     private boolean disabled;
+    private boolean banned;
+    private String banReason;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
