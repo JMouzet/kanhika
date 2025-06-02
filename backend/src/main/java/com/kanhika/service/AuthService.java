@@ -3,6 +3,8 @@ package com.kanhika.service;
 import com.kanhika.dto.auth.AuthDTO;
 import com.kanhika.dto.auth.LoginDTO;
 import com.kanhika.dto.auth.RegisterDTO;
+import com.kanhika.exception.ConflictException;
+import com.kanhika.exception.InvalidFormatException;
 import com.kanhika.model.User;
 import com.kanhika.repository.UserRepository;
 import com.kanhika.security.JwtService;
@@ -32,16 +34,30 @@ public class AuthService {
     }
 
     public AuthDTO register(RegisterDTO request) {
+        // Check username format, must be only letters, numbers, '-' and '_'
+        if (!request.username().matches("^[a-zA-Z0-9-_]+$")) {
+            throw new InvalidFormatException("Username can only contain letters, numbers, '-' and '_'.");
+        }
+
+        // Check email format, + addresses not allowed
+        if (!request.email().matches("^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new InvalidFormatException("Invalid email format.");
+        }
+
+        // Check password format, must be at least 8 characters long
+        if (request.password().length() < 8) {
+            throw new InvalidFormatException("Password must be at least 8 characters long.");
+        }
+
         // Check username uniqueness
         if (userRepository.existsByUsernameIgnoreCase(request.username())) {
-            throw new RuntimeException("This username is already taken!");
+            throw new ConflictException("This username is already taken.");
         }
 
         // Check email uniqueness
-        if (userRepository.existsByEmailIgnoreCaseAndDisabledFalse(request.email())) {
-            throw new RuntimeException("There's already an account linked with this email address!");
+        if (userRepository.existsByEmailUsedOrBanned(request.email())) {
+            throw new ConflictException("There is already an account linked with this email address.");
         }
-
 
         // Create the user object
         User user = new User();
