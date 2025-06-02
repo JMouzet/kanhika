@@ -35,4 +35,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDisabledException(DisabledException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
+
+
+    // Default, exception message is for DEBUG only!
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error: ".concat(ex.getMessage()));
+    }
 }

@@ -90,7 +90,7 @@ public class AuthService {
 
         // Get the user
         User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(request.username())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
         // Return the JWT token
         String token = jwtService.generateToken(user.getUsername());

@@ -4,8 +4,8 @@
 - <span style="color: green;">POST /api/auth/login <- Log into an account, return Bearer token</span>
 
 ## Users
-- GET /api/users/get/{username} <- Get info on a user, return id, username, exp, flame, *role*, *joined date* ... if not disabled
-- GET /api/users/me <- Return user info using the Bearer token
+- GET /api/users/get/{username} <- Get info on a user, return username, bio, exp, flame, role, joined date ... if not disabled
+- GET /api/users/me <- Return user info
 - PATCH /api/users/me <- Edit profile
 - PATCH /api/users/me/password <- Change password, old and new passwords required
 - DELETE /api/users/me <- Disable (delete) its own account (beware of unique email field !)
@@ -13,8 +13,10 @@
 - DELETE /api/users/follow/{username} <- Unfollow a user
 - POST /api/users/block/{username} <- Block a user
 - DELETE /api/users/block/{username} <- Unblock a user
+- GET /api/users/search/{input} <- Return a list of users matching the search input
 
-- (?) DELETE /api/users/{username} <- ADMIN ONLY: Disable someone else account
+### Admin:
+- DELETE /api/admin/users/ban/{username} <- Ban an account
 
 ## Kanjis
 - GET /api/kanjis/{kanji} <- Get info on a kanji
@@ -44,3 +46,7 @@
 - POST /api/quizzes <- Generate a quiz, return the quiz id and the first question
 - GET /api/quizzes/{id}/questions <- Get the next question
 - POST /api/quizzes/{id}/questions/{id} <- Send the answer, return the result and change the score statistics
+
+
+# Debug cleaning
+- Remove exception message in the default exception handler
