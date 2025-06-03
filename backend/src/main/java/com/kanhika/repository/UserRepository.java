@@ -16,10 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Username are locked forever even for disabled users
     boolean existsByUsernameIgnoreCase(String username);
 
-    // Check if the username exists
-    // Case insensitive and user must be active
-    boolean existsByUsernameIgnoreCaseAndDisabledFalse(String username);
-
     // Check if the email exists
     // Case insensitive and user must be active or banned
     // Emails are freed if the user is disabled, but locked if banned
