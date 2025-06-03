@@ -44,11 +44,6 @@ public class AuthService {
             throw new InvalidFormatException("Invalid email format.");
         }
 
-        // Check password format, must be at least 8 characters long
-        if (request.password().length() < 8) {
-            throw new InvalidFormatException("Password must be at least 8 characters long.");
-        }
-
         // Check username uniqueness
         if (userRepository.existsByUsernameIgnoreCase(request.username())) {
             throw new ConflictException("This username is already taken.");
