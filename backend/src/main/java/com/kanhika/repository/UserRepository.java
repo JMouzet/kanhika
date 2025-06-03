@@ -8,6 +8,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+    // Return the User object based on the id
+    // User must be active
+    Optional<User> findByIdAndDisabledFalse(int id);
+
     // Return the User object based on the username
     // Case insensitive and user must be active
     Optional<User> findByUsernameIgnoreCaseAndDisabledFalse(String username);

@@ -20,16 +20,16 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(Integer id) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(id.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String extractUsername(String token) {
+    public String extractId(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -40,7 +40,7 @@ public class JwtService {
     
     public boolean isTokenValid(String token) {
         try {
-            extractUsername(token);
+            extractId(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;

@@ -71,7 +71,7 @@ public class AuthService {
         userRepository.save(user);
 
         // Return the JWT token
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getId());
         return new AuthDTO(token);
     }
 
@@ -88,7 +88,7 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
         // Return the JWT token
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getId());
         return new AuthDTO(token);
     }
 }
