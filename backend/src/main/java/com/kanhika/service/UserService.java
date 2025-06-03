@@ -3,6 +3,8 @@ package com.kanhika.service;
 import com.kanhika.dto.user.UserBioDTO;
 import com.kanhika.dto.user.UserPublicDTO;
 import com.kanhika.dto.user.UserSelfDTO;
+import com.kanhika.dto.user.UserUsernameDTO;
+import com.kanhika.exception.ConflictException;
 import com.kanhika.model.User;
 import com.kanhika.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -53,6 +55,24 @@ public class UserService {
 
         return new UserBioDTO(
                 user.getBio()
+        );
+    }
+
+    public UserUsernameDTO patchUserUsername(String username,
+                                           UserUsernameDTO request) {
+        // Check username uniqueness
+        if (userRepository.existsByUsernameIgnoreCase(request.username())) {
+            throw new ConflictException("This username is already taken.");
+        }
+
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        user.setUsername(request.username());
+        userRepository.save(user);
+
+        return new UserUsernameDTO(
+                user.getUsername()
         );
     }
 }

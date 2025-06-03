@@ -6,8 +6,8 @@
 ## Users
 - <span style="color: green;">GET /api/users/get/{username} <= Get info on a user, return username, bio, exp, flame, role, joined date ... if not disabled</span>
 - <span style="color: green;">GET /api/users/me <= Return self user info that shows in settings</span>
-- PATCH /api/users/me/bio <= Change biography
-- PATCH /api/users/me/username <= Change username
+- <span style="color: green;">PATCH /api/users/me/bio <= Change biography</span>
+- <span style="color: green;">PATCH /api/users/me/username <= Change username</span>
 - PATCH /api/users/me/email <= Change email
 - PATCH /api/users/me/password <= Change password, old and new passwords required
 - DELETE /api/users/me <= Disable (delete) its own account (beware of unique email field !)
