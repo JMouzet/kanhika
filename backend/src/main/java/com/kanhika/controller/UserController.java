@@ -1,9 +1,6 @@
 package com.kanhika.controller;
 
-import com.kanhika.dto.user.UserBioDTO;
-import com.kanhika.dto.user.UserPublicDTO;
-import com.kanhika.dto.user.UserSelfDTO;
-import com.kanhika.dto.user.UserUsernameDTO;
+import com.kanhika.dto.user.*;
 import com.kanhika.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +38,11 @@ public class UserController {
     public ResponseEntity<UserUsernameDTO> patchUserUsername(@AuthenticationPrincipal UserDetails userDetails,
                                                              @RequestBody @Valid UserUsernameDTO request) {
         return ResponseEntity.ok(userService.patchUserUsername(userDetails.getUsername(), request));
+    }
+
+    @PatchMapping("/me/email")
+    public ResponseEntity<UserEmailDTO> patchUserEmail(@AuthenticationPrincipal UserDetails userDetails,
+                                                             @RequestBody @Valid UserEmailDTO request) {
+        return ResponseEntity.ok(userService.patchUserEmail(userDetails.getUsername(), request));
     }
 }
