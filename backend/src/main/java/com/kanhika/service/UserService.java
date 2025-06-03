@@ -1,5 +1,6 @@
 package com.kanhika.service;
 
+import com.kanhika.dto.user.UserBioDTO;
 import com.kanhika.dto.user.UserPublicDTO;
 import com.kanhika.dto.user.UserSelfDTO;
 import com.kanhika.model.User;
@@ -39,6 +40,19 @@ public class UserService {
                 user.getUsername(),
                 user.getBio(),
                 user.getEmail()
+        );
+    }
+
+    public UserBioDTO patchUserBio(String username,
+                                   UserBioDTO request) {
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        user.setBio(request.bio());
+        userRepository.save(user);
+
+        return new UserBioDTO(
+                user.getBio()
         );
     }
 }

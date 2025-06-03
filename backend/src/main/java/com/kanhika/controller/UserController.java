@@ -1,15 +1,14 @@
 package com.kanhika.controller;
 
+import com.kanhika.dto.user.UserBioDTO;
 import com.kanhika.dto.user.UserPublicDTO;
 import com.kanhika.dto.user.UserSelfDTO;
 import com.kanhika.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -29,5 +28,11 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserSelfDTO> getUserSelf(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(userService.getUserSelf(userDetails.getUsername()));
+    }
+
+    @PatchMapping("/me/bio")
+    public ResponseEntity<UserBioDTO> patchUserBio(@AuthenticationPrincipal UserDetails userDetails,
+                                                   @RequestBody @Valid UserBioDTO request) {
+        return ResponseEntity.ok(userService.patchUserBio(userDetails.getUsername(), request));
     }
 }
