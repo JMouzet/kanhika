@@ -1,8 +1,11 @@
 package com.kanhika.controller;
 
 import com.kanhika.dto.user.UserPublicDTO;
+import com.kanhika.dto.user.UserSelfDTO;
 import com.kanhika.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,5 +24,10 @@ public class UserController {
     @GetMapping("/get/{username}")
     public ResponseEntity<UserPublicDTO> getUser(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUser(username));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserSelfDTO> getUserSelf(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userService.getUserSelf(userDetails.getUsername()));
     }
 }

@@ -1,6 +1,7 @@
 package com.kanhika.service;
 
 import com.kanhika.dto.user.UserPublicDTO;
+import com.kanhika.dto.user.UserSelfDTO;
 import com.kanhika.model.User;
 import com.kanhika.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +28,17 @@ public class UserService {
                 user.getFlame(),
                 user.getRole(),
                 user.getCreatedAt()
+        );
+    }
+
+    public UserSelfDTO getUserSelf(String username) {
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        return new UserSelfDTO(
+                user.getUsername(),
+                user.getBio(),
+                user.getEmail()
         );
     }
 }
