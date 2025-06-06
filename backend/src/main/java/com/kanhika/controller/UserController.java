@@ -52,4 +52,10 @@ public class UserController {
         userService.patchUserPassword(userDetails.getUsername(), request);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> disableUser(@AuthenticationPrincipal UserDetails userDetails) {
+        userService.disableUser(userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
 }

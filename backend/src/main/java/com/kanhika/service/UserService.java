@@ -109,4 +109,12 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
     }
+
+    public void disableUser(String username) {
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        user.setDisabled(true);
+        userRepository.save(user);
+    }
 }
