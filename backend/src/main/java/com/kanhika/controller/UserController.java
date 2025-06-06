@@ -42,7 +42,14 @@ public class UserController {
 
     @PatchMapping("/me/email")
     public ResponseEntity<UserEmailDTO> patchUserEmail(@AuthenticationPrincipal UserDetails userDetails,
-                                                             @RequestBody @Valid UserEmailDTO request) {
+                                                       @RequestBody @Valid UserEmailDTO request) {
         return ResponseEntity.ok(userService.patchUserEmail(userDetails.getUsername(), request));
+    }
+
+    @PatchMapping("/me/password")
+    public ResponseEntity<Void> patchUserPassword(@AuthenticationPrincipal UserDetails userDetails,
+                                                       @RequestBody @Valid UserPasswordDTO request) {
+        userService.patchUserPassword(userDetails.getUsername(), request);
+        return ResponseEntity.noContent().build();
     }
 }

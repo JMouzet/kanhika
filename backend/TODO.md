@@ -9,7 +9,7 @@
 - <span style="color: green;">PATCH /api/users/me/bio <= Change biography</span>
 - <span style="color: green;">PATCH /api/users/me/username <= Change username</span>
 - <span style="color: green;">PATCH /api/users/me/email <= Change email</span>
-- PATCH /api/users/me/password <= Change password, old and new passwords required
+- <span style="color: green;">PATCH /api/users/me/password <= Change password, old and new passwords required</span>
 - DELETE /api/users/me <= Disable (delete) its own account (beware of unique email field !)
 - POST /api/users/follow/{username} <= Follow a user
 - DELETE /api/users/follow/{username} <= Unfollow a user

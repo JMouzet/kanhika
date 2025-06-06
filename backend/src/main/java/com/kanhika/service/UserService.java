@@ -4,17 +4,22 @@ import com.kanhika.dto.user.*;
 import com.kanhika.exception.ConflictException;
 import com.kanhika.model.User;
 import com.kanhika.repository.UserRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserPublicDTO getUser(String username) {
@@ -74,7 +79,7 @@ public class UserService {
     }
 
     public UserEmailDTO patchUserEmail(String username,
-                                             UserEmailDTO request) {
+                                       UserEmailDTO request) {
         // Check email uniqueness
         if (userRepository.existsByEmailUsedOrBanned(request.email())) {
             throw new ConflictException("There is already an account linked with this email address.");
@@ -89,5 +94,19 @@ public class UserService {
         return new UserEmailDTO(
                 user.getEmail()
         );
+    }
+
+    public void patchUserPassword(String username,
+                                  UserPasswordDTO request) {
+
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Incorrect current password.");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
     }
 }
