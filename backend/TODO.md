@@ -11,11 +11,14 @@
 - <span style="color: green;">PATCH /api/users/me/email <= Change email</span>
 - <span style="color: green;">PATCH /api/users/me/password <= Change password, old and new passwords required</span>
 - <span style="color: green;">DELETE /api/users/me <= Disable (delete) its own account</span>
-- POST /api/users/follow/{username} <= Follow a user
-- DELETE /api/users/follow/{username} <= Unfollow a user
-- POST /api/users/block/{username} <= Block a user
-- DELETE /api/users/block/{username} <= Unblock a user
-- GET /api/users/search/{input} <= Return a list of users matching the search input
+- <span style="color: green;">GET /api/users/followers <= Get accounts following you</span>
+- <span style="color: green;">GET /api/users/following <= Get the accounts you follow</span>
+- <span style="color: green;">POST /api/users/follow/{username} <= Follow a user</span>
+- <span style="color: green;">DELETE /api/users/follow/{username} <= Unfollow a user</span>
+- <span style="color: green;">GET /api/users/block <= Block the accounts you follow</span>
+- <span style="color: green;">POST /api/users/block/{username} <= Block a user</span>
+- <span style="color: green;">DELETE /api/users/block/{username} <= Unblock a user</span>
+- <span style="color: green;">GET /api/users/search/{input} <= Return a list of users matching the search input</span>
 
 ### Admin:
 - DELETE /api/admin/users/ban/{username} <= Ban an account

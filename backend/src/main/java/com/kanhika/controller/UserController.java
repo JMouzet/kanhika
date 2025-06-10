@@ -105,4 +105,9 @@ public class UserController {
         userService.unblockUser(userDetails.getUsername(), username);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search/{input}")
+    public ResponseEntity<List<UserPublicDTO>> searchUsers(@PathVariable String input) {
+        return ResponseEntity.ok(userService.searchUsers(input));
+    }
 }

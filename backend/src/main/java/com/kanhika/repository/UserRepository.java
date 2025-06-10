@@ -31,4 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         AND (u.disabled = false OR u.banned = true)
     """)
     boolean existsByEmailUsedOrBanned(@Param("email") String email);
+
+    // Search for user containing keyword
+    List<User> findAllByUsernameIgnoreCaseContaining(String username);
 }

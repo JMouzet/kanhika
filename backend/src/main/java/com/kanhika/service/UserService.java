@@ -250,4 +250,19 @@ public class UserService {
 
         blockRepository.deleteByUserIdAndBlockId(myId, targetId);
     }
+
+    public List<UserPublicDTO> searchUsers(String input) {
+        List<User> result = userRepository.findAllByUsernameIgnoreCaseContaining(input);
+
+        return result.stream()
+                .map(user -> new UserPublicDTO(
+                        user.getUsername(),
+                        user.getBio(),
+                        user.getExp(),
+                        user.getFlame(),
+                        user.getRole(),
+                        user.getCreatedAt()
+                ))
+                .toList();
+    }
 }
