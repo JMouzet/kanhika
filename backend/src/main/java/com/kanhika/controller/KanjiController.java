@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/kanjis")
 public class KanjiController {
@@ -23,4 +25,13 @@ public class KanjiController {
         return ResponseEntity.ok(kanjiService.getKanji(kanji));
     }
 
+    @GetMapping("/grade/{level}")
+    public ResponseEntity<List<KanjiDTO>> getKanjisByGrade(@PathVariable int level) {
+        return ResponseEntity.ok(kanjiService.getKanjisByGrade(level));
+    }
+
+    @GetMapping("/jlpt/{level}")
+    public ResponseEntity<List<KanjiDTO>> getKanjisByJlpt(@PathVariable int level) {
+        return ResponseEntity.ok(kanjiService.getKanjisByJlpt(level));
+    }
 }

@@ -25,8 +25,8 @@
 
 ## Kanjis
 - <span style="color: green;">GET /api/kanjis/{kanji} <= Get info on a kanji</span>
-- GET /api/kanjis/grade/{level} <= Get all kanjis with the matching grade level
-- GET /api/kanjis/jlpt/{level} <= Get all kanjis with the matching jlpt level
+- <span style="color: green;">GET /api/kanjis/grade/{level} <= Get all kanjis with the matching grade level</span>
+- <span style="color: green;">GET /api/kanjis/jlpt/{level} <= Get all kanjis with the matching jlpt level</span>
 - GET /api/kanjis/search/{input} <= Return a list of kanji matching the search input. Can be a kanji, a reading or a meaning
 - GET /api/kanjis/{kanji}/comments <= Get comments on a kanji page
 - POST /api/kanjis/{kanji}/comments <= Send a comment on a kanji page

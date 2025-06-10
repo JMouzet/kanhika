@@ -33,27 +33,58 @@ public class KanjiService {
         Kanji kanjiInfo = kanjiRepository.findByKanji(kanji)
                 .orElseThrow(() -> new ResourceNotFoundException("Kanji not found."));
 
-        List<String> meanings = meaningRepository.findAllByKanji(kanji)
-                .stream()
-                .map(Meaning::getMeaning)
-                .toList();
-        List<String> kunReadings = readingRepository.findAllKunByKanji(kanji)
-                .stream()
-                .map(Reading::getReading)
-                .toList();
-        List<String> onReadings = readingRepository.findAllOnByKanji(kanji)
-                .stream()
-                .map(Reading::getReading)
-                .toList();
-
         return new KanjiDTO(
                 kanjiInfo.getKanji(),
                 kanjiInfo.getGrade(),
                 kanjiInfo.getJlpt(),
                 kanjiInfo.getStrokeCount(),
-                meanings,
-                kunReadings,
-                onReadings
+                meaningRepository.findAllByKanji(kanjiInfo.getKanji())
+                        .stream()
+                        .map(Meaning::getMeaning)
+                        .toList(),
+                readingRepository.findAllOnByKanji(kanjiInfo.getKanji())
+                        .stream()
+                        .map(Reading::getReading)
+                        .toList(),
+                readingRepository.findAllOnByKanji(kanjiInfo.getKanji())
+                        .stream()
+                        .map(Reading::getReading)
+                        .toList()
         );
+    }
+
+    public List<KanjiDTO> getKanjisByGrade(int level) {
+        List<Kanji> kanjis = kanjiRepository.findAllByGrade(level);
+
+        return makeKanjiListDTO(kanjis);
+    }
+
+    public List<KanjiDTO> getKanjisByJlpt(int level) {
+        List<Kanji> kanjis = kanjiRepository.findAllByJlpt(level);
+
+        return makeKanjiListDTO(kanjis);
+    }
+
+
+    private List<KanjiDTO> makeKanjiListDTO(List<Kanji> kanjis) {
+        return kanjis.stream()
+                .map(kanji -> new KanjiDTO(
+                        kanji.getKanji(),
+                        kanji.getGrade(),
+                        kanji.getJlpt(),
+                        kanji.getStrokeCount(),
+                        meaningRepository.findAllByKanji(kanji.getKanji())
+                                .stream()
+                                .map(Meaning::getMeaning)
+                                .toList(),
+                        readingRepository.findAllOnByKanji(kanji.getKanji())
+                                .stream()
+                                .map(Reading::getReading)
+                                .toList(),
+                        readingRepository.findAllOnByKanji(kanji.getKanji())
+                                .stream()
+                                .map(Reading::getReading)
+                                .toList()
+                )).toList();
     }
 }
