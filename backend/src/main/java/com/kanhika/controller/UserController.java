@@ -80,8 +80,29 @@ public class UserController {
 
     @DeleteMapping("/follow/{username}")
     public ResponseEntity<Void> unfollowUser(@AuthenticationPrincipal UserDetails userDetails,
-                                           @PathVariable String username) {
+                                             @PathVariable String username) {
         userService.unfollowUser(userDetails.getUsername(), username);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/block")
+    public ResponseEntity<List<UserPublicDTO>> getBlockedUsers(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userService.getBlockedUsers(userDetails.getUsername()));
+    }
+
+    @PostMapping("/block/{username}")
+    public ResponseEntity<Void> blockUser(@AuthenticationPrincipal UserDetails userDetails,
+                                           @PathVariable String username) {
+        // Unfollow the user before blocking
+        userService.unfollowUser(userDetails.getUsername(), username);
+        userService.blockUser(userDetails.getUsername(), username);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/block/{username}")
+    public ResponseEntity<Void> unblockUser(@AuthenticationPrincipal UserDetails userDetails,
+                                             @PathVariable String username) {
+        userService.unblockUser(userDetails.getUsername(), username);
         return ResponseEntity.noContent().build();
     }
 }

@@ -2,8 +2,10 @@ package com.kanhika.service;
 
 import com.kanhika.dto.user.*;
 import com.kanhika.exception.ConflictException;
+import com.kanhika.model.Block;
 import com.kanhika.model.Follow;
 import com.kanhika.model.User;
+import com.kanhika.repository.BlockRepository;
 import com.kanhika.repository.FollowRepository;
 import com.kanhika.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -21,12 +23,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final FollowRepository followRepository;
+    private final BlockRepository blockRepository;
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder, FollowRepository followRepository) {
+                       PasswordEncoder passwordEncoder,
+                       FollowRepository followRepository,
+                       BlockRepository blockRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.followRepository = followRepository;
+        this.blockRepository = blockRepository;
     }
 
     public UserPublicDTO getUser(String username) {
@@ -190,5 +196,58 @@ public class UserService {
         }
 
         followRepository.deleteByUserIdAndFollowId(myId, targetId);
+    }
+
+    public List<UserPublicDTO> getBlockedUsers(String username) {
+        List<User> blocked = blockRepository.findAllBlockedUsers(username);
+        return blocked.stream()
+                .map(user -> new UserPublicDTO(
+                        user.getUsername(),
+                        user.getBio(),
+                        user.getExp(),
+                        user.getFlame(),
+                        user.getRole(),
+                        user.getCreatedAt()
+                ))
+                .toList();
+    }
+
+    public void blockUser(String myUsername, String targetUsername) {
+        User myUser = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(myUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+        User targetUser = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(targetUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        int myId = myUser.getId();
+        int targetId = targetUser.getId();
+
+        if (myId == targetId) {
+            throw new IllegalArgumentException("Blocking itself is not allowed.");
+        }
+
+        // Check if record not exists
+        if (!blockRepository.existsByUserIdAndBlockId(myId, targetId)) {
+            Block block = new Block();
+            block.setUser(myUser);
+            block.setBlock(targetUser);
+            blockRepository.save(block);
+        }
+    }
+
+    @Transactional
+    public void unblockUser(String myUsername, String targetUsername) {
+        User myUser = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(myUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+        User targetUser = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(targetUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        int myId = myUser.getId();
+        int targetId = targetUser.getId();
+
+        if (myId == targetId) {
+            throw new IllegalArgumentException("Unblocking itself won't do anything.");
+        }
+
+        blockRepository.deleteByUserIdAndBlockId(myId, targetId);
     }
 }
