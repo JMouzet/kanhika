@@ -8,6 +8,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -56,6 +58,30 @@ public class UserController {
     @DeleteMapping("/me")
     public ResponseEntity<Void> disableUser(@AuthenticationPrincipal UserDetails userDetails) {
         userService.disableUser(userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/followers")
+    public ResponseEntity<List<UserPublicDTO>> getFollowerUsers(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userService.getFollowerUsers(userDetails.getUsername()));
+    }
+
+    @GetMapping("/following")
+    public ResponseEntity<List<UserPublicDTO>> getFollowedUsers(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userService.getFollowedUsers(userDetails.getUsername()));
+    }
+
+    @PostMapping("/follow/{username}")
+    public ResponseEntity<Void> followUser(@AuthenticationPrincipal UserDetails userDetails,
+                                           @PathVariable String username) {
+        userService.followUser(userDetails.getUsername(), username);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/follow/{username}")
+    public ResponseEntity<Void> unfollowUser(@AuthenticationPrincipal UserDetails userDetails,
+                                           @PathVariable String username) {
+        userService.unfollowUser(userDetails.getUsername(), username);
         return ResponseEntity.noContent().build();
     }
 }

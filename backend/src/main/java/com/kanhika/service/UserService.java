@@ -2,12 +2,17 @@ package com.kanhika.service;
 
 import com.kanhika.dto.user.*;
 import com.kanhika.exception.ConflictException;
+import com.kanhika.model.Follow;
 import com.kanhika.model.User;
+import com.kanhika.repository.FollowRepository;
 import com.kanhika.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
 
 
 @Service
@@ -15,11 +20,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FollowRepository followRepository;
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder, FollowRepository followRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.followRepository = followRepository;
     }
 
     public UserPublicDTO getUser(String username) {
@@ -38,7 +45,7 @@ public class UserService {
 
     public UserSelfDTO getUserSelf(String username) {
         User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
         return new UserSelfDTO(
                 user.getUsername(),
@@ -50,7 +57,7 @@ public class UserService {
     public UserBioDTO patchUserBio(String username,
                                    UserBioDTO request) {
         User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
         user.setBio(request.bio());
         userRepository.save(user);
@@ -68,7 +75,7 @@ public class UserService {
         }
 
         User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
         user.setUsername(request.username());
         userRepository.save(user);
@@ -86,7 +93,7 @@ public class UserService {
         }
 
         User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
         user.setEmail(request.email());
         userRepository.save(user);
@@ -100,7 +107,7 @@ public class UserService {
                                   UserPasswordDTO request) {
 
         User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             throw new BadCredentialsException("Incorrect current password.");
@@ -112,9 +119,76 @@ public class UserService {
 
     public void disableUser(String username) {
         User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
 
         user.setDisabled(true);
         userRepository.save(user);
+    }
+
+    public List<UserPublicDTO> getFollowerUsers(String username) {
+        List<User> followers = followRepository.findAllFollowerUsers(username);
+        return followers.stream()
+                .map(user -> new UserPublicDTO(
+                        user.getUsername(),
+                        user.getBio(),
+                        user.getExp(),
+                        user.getFlame(),
+                        user.getRole(),
+                        user.getCreatedAt()
+                ))
+                .toList();
+    }
+
+    public List<UserPublicDTO> getFollowedUsers(String username) {
+        List<User> following = followRepository.findAllFollowedUsers(username);
+        return following.stream()
+                .map(user -> new UserPublicDTO(
+                        user.getUsername(),
+                        user.getBio(),
+                        user.getExp(),
+                        user.getFlame(),
+                        user.getRole(),
+                        user.getCreatedAt()
+                ))
+                .toList();
+    }
+
+    public void followUser(String myUsername, String targetUsername) {
+        User myUser = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(myUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+        User targetUser = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(targetUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        int myId = myUser.getId();
+        int targetId = targetUser.getId();
+
+        if (myId == targetId) {
+            throw new IllegalArgumentException("Following itself is not allowed.");
+        }
+
+        // Check if record not exists
+        if (!followRepository.existsByUserIdAndFollowId(myId, targetId)) {
+            Follow follow = new Follow();
+            follow.setUser(myUser);
+            follow.setFollow(targetUser);
+            followRepository.save(follow);
+        }
+    }
+
+    @Transactional
+    public void unfollowUser(String myUsername, String targetUsername) {
+        User myUser = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(myUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+        User targetUser = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(targetUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        int myId = myUser.getId();
+        int targetId = targetUser.getId();
+
+        if (myId == targetId) {
+            throw new IllegalArgumentException("Unfollowing itself won't do anything.");
+        }
+
+        followRepository.deleteByUserIdAndFollowId(myId, targetId);
     }
 }
