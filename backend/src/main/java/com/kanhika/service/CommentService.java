@@ -8,6 +8,7 @@ import com.kanhika.exception.UnauthorizedException;
 import com.kanhika.model.Comment;
 import com.kanhika.model.Kanji;
 import com.kanhika.model.User;
+import com.kanhika.model.Vote;
 import com.kanhika.repository.CommentRepository;
 import com.kanhika.repository.KanjiRepository;
 import com.kanhika.repository.UserRepository;
@@ -57,7 +58,8 @@ public class CommentService {
         comment.setKanji(kanjiObj);
         comment.setMessage(request.message());
         commentRepository.save(comment);
-        // TODO: auto upvote the post
+
+        voteComment(username, comment.getId(), true);
 
         return makeCommentDTO(comment);
     }
@@ -98,6 +100,41 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    public void voteComment(String username,
+                            int id,
+                            boolean isUpvote) {
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+        Comment comment = commentRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found."));
+
+        Vote vote = voteRepository.findVoteByCommentAndUser(comment, user)
+                .orElse(new Vote());
+
+        int voteValue = -1;
+        if (isUpvote)
+            voteValue = 1;
+
+
+        vote.setComment(comment);
+        vote.setUser(user);
+        vote.setVote(voteValue);
+        voteRepository.save(vote);
+    }
+
+    public void removeVoteComment(String username,
+                                  int id) {
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+        Comment comment = commentRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found."));
+
+        Vote vote = voteRepository.findVoteByCommentAndUser(comment, user)
+                .orElseThrow(() -> new NoModificationsException(""));
+
+        voteRepository.delete(vote);
+    }
+
 
     private List<CommentDTO> makeListCommentDTO(List<Comment> comments) {
         return comments.stream()
@@ -106,11 +143,21 @@ public class CommentService {
     }
 
     private CommentDTO makeCommentDTO(Comment comment) {
+        Vote vote = voteRepository.findVoteByCommentAndUser(comment, comment.getUser())
+                .orElseGet(() -> {
+                    Vote empty = new Vote();
+                    empty.setComment(comment);
+                    empty.setUser(comment.getUser());
+                    empty.setVote(0);
+                    return empty;
+                });
+
         return new CommentDTO(
                 comment.getId(),
                 comment.getUser().getUsername(),
                 comment.getMessage(),
-                voteRepository.findSumVote(comment.getId()),
+                voteRepository.findSumVote(comment),
+                vote.getVote(),
                 false,
                 comment.getCreatedAt(),
                 comment.getUpdatedAt()

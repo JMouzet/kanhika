@@ -36,4 +36,25 @@ public class CommentController {
         commentService.deleteComment(userDetails.getUsername(), id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/vote/up")
+    public ResponseEntity<Void> upvoteComment(@AuthenticationPrincipal UserDetails userDetails,
+                                              @PathVariable int id) {
+        commentService.voteComment(userDetails.getUsername(), id, true);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/vote/down")
+    public ResponseEntity<Void> downvoteComment(@AuthenticationPrincipal UserDetails userDetails,
+                                                @PathVariable int id) {
+        commentService.voteComment(userDetails.getUsername(), id, false);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/vote")
+    public ResponseEntity<Void> removeVoteComment(@AuthenticationPrincipal UserDetails userDetails,
+                                                @PathVariable int id) {
+        commentService.removeVoteComment(userDetails.getUsername(), id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -7,6 +7,7 @@ public record CommentDTO(
         String username,
         String message,
         int vote,
+        int userVote,
         boolean deleted,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

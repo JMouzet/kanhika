@@ -34,10 +34,10 @@
 ## Comments
 - <span style="color: green;">PATCH /api/comments/{id} <= Edit a comment, check the Bearer token</span>
 - <span style="color: green;">DELETE /api/comments/{id} <= Remove a comment, check the Bearer token</span>
-- POST /api/comments/{id}/vote/up <= Send an upvote (like), replace if a vote already exists
-- POST /api/comments/{id}/vote/down <= Send a downvote (dislike), replace if a vote already exists
-- DELETE /api/comments/{id}/vote <= Remove a vote
-- 
+- <span style="color: green;">POST /api/comments/{id}/vote/up <= Send an upvote (like), replace if a vote already exists</span>
+- <span style="color: green;">POST /api/comments/{id}/vote/down <= Send a downvote (dislike), replace if a vote already exists</span>
+- <span style="color: green;">DELETE /api/comments/{id}/vote <= Remove a vote</span>
+
 ### Admin:
 - DELETE /api/admin/comments/{id} <= Remove any comment, check for ADMIN role
 
