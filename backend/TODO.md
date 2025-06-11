@@ -32,11 +32,14 @@
 - <span style="color: green;">POST /api/kanjis/{kanji}/comments <= Send a comment on a kanji page</span>
 
 ## Comments
-- PATCH /api/comments/{id} <= Edit a comment, check the Bearer token
-- DELETE /api/comments/{id} <= Remove a comment, check the Bearer token unless ADMIN (?)
+- <span style="color: green;">PATCH /api/comments/{id} <= Edit a comment, check the Bearer token</span>
+- DELETE /api/comments/{id} <= Remove a comment, check the Bearer token
 - POST /api/comments/{id}/vote/up <= Send an upvote (like), replace if a vote already exists
 - POST /api/comments/{id}/vote/down <= Send a downvote (dislike), replace if a vote already exists
 - DELETE /api/comments/{id}/vote <= Remove a vote
+- 
+### Admin:
+- DELETE /api/admin/comments/{id} <= Remove any comment, check for ADMIN role
 
 ## Conversations
 - GET /api/conversations/ <= Get the user's conversations sorted by latest with a preview of the latest message for each
@@ -47,7 +50,7 @@
 - DELETE /api/messages/{id} <= Delete a message, check the Bearer token (no ADMIN actions possible here)
 
 ## Quizzes
-- GET /api/quizzes <= Get a potiental uncleared quiz
+- GET /api/quizzes <= Get a potentially uncleared quiz
 - POST /api/quizzes <= Generate a quiz, return the quiz id and the first question
 - GET /api/quizzes/{id}/questions <= Get the next question
 - POST /api/quizzes/{id}/questions/{id} <= Send the answer, return the result and change the score statistics

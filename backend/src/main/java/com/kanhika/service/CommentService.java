@@ -2,7 +2,9 @@ package com.kanhika.service;
 
 import com.kanhika.dto.comment.CommentDTO;
 import com.kanhika.dto.comment.CommentPostDTO;
+import com.kanhika.exception.NoModificationsException;
 import com.kanhika.exception.ResourceNotFoundException;
+import com.kanhika.exception.UnauthorizedException;
 import com.kanhika.model.Comment;
 import com.kanhika.model.Kanji;
 import com.kanhika.model.User;
@@ -56,6 +58,27 @@ public class CommentService {
         comment.setMessage(request.message());
         commentRepository.save(comment);
         // TODO: auto upvote the post
+
+        return makeCommentDTO(comment);
+    }
+
+    public CommentDTO editComment(String username,
+                                  int id,
+                                  CommentPostDTO request) {
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found."));
+
+        if (!user.equals(comment.getUser())) {
+            throw new UnauthorizedException("You are not allowed to edit this comment.");
+        }
+        if (comment.getMessage().equals(request.message())) {
+            throw new NoModificationsException("");
+        }
+
+        comment.setMessage(request.message());
+        commentRepository.save(comment);
 
         return makeCommentDTO(comment);
     }

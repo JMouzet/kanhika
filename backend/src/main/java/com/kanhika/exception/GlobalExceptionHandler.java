@@ -72,6 +72,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    // No modifications
+    @ExceptionHandler(NoModificationsException.class)
+    public ResponseEntity<Void> handleNoModificationsException() {
+        return ResponseEntity.noContent().build();
+    }
+
+    // Unauthorized
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> handleUnauthorizedException(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
 
     // Default, exception message is for DEBUG only!
     @ExceptionHandler(Exception.class)
