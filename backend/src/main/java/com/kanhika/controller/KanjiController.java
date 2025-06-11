@@ -47,14 +47,15 @@ public class KanjiController {
     }
 
     @GetMapping("/{kanji}/comments")
-    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable String kanji) {
-        return ResponseEntity.ok(commentService.getComments(kanji));
+    public ResponseEntity<List<CommentDTO>> getComments(@AuthenticationPrincipal UserDetails userDetails,
+                                                        @PathVariable String kanji) {
+        return ResponseEntity.ok(commentService.getComments(userDetails.getUsername(), kanji));
     }
 
     @PostMapping("/{kanji}/comments")
     public ResponseEntity<CommentDTO> sendComment(@AuthenticationPrincipal UserDetails userDetails,
-                                  @PathVariable String kanji,
-                                  @RequestBody @Valid CommentPostDTO request) {
+                                                  @PathVariable String kanji,
+                                                  @RequestBody @Valid CommentPostDTO request) {
         return ResponseEntity.ok(commentService.sendComment(userDetails.getUsername(), kanji, request));
     }
 }

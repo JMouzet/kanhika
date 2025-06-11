@@ -9,10 +9,7 @@ import com.kanhika.model.Comment;
 import com.kanhika.model.Kanji;
 import com.kanhika.model.User;
 import com.kanhika.model.Vote;
-import com.kanhika.repository.CommentRepository;
-import com.kanhika.repository.KanjiRepository;
-import com.kanhika.repository.UserRepository;
-import com.kanhika.repository.VoteRepository;
+import com.kanhika.repository.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -25,24 +22,30 @@ public class CommentService {
     private final VoteRepository voteRepository;
     private final KanjiRepository kanjiRepository;
     private final UserRepository userRepository;
+    private final BlockRepository blockRepository;
 
     public CommentService(CommentRepository commentRepository,
                           VoteRepository voteRepository,
                           KanjiRepository kanjiRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          BlockRepository blockRepository) {
         this.commentRepository = commentRepository;
         this.voteRepository = voteRepository;
         this.kanjiRepository = kanjiRepository;
         this.userRepository = userRepository;
+        this.blockRepository = blockRepository;
     }
 
-    public List<CommentDTO> getComments(String kanji) {
+    public List<CommentDTO> getComments(String username,
+                                        String kanji) {
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
         Kanji kanjiObj = kanjiRepository.findByKanji(kanji)
                 .orElseThrow(() -> new ResourceNotFoundException("Kanji not found."));
 
         List<Comment> comments = commentRepository.findAllByKanjiAndDeletedFalse(kanjiObj);
 
-        return makeListCommentDTO(comments);
+        return makeListCommentDTO(comments, user);
     }
 
     public CommentDTO sendComment(String username,
@@ -61,7 +64,7 @@ public class CommentService {
 
         voteComment(username, comment.getId(), true);
 
-        return makeCommentDTO(comment);
+        return makeCommentDTO(comment, user);
     }
 
     public CommentDTO editComment(String username,
@@ -82,7 +85,7 @@ public class CommentService {
         comment.setMessage(request.message());
         commentRepository.save(comment);
 
-        return makeCommentDTO(comment);
+        return makeCommentDTO(comment, user);
     }
 
     public void deleteComment(String username,
@@ -136,13 +139,15 @@ public class CommentService {
     }
 
 
-    private List<CommentDTO> makeListCommentDTO(List<Comment> comments) {
+    private List<CommentDTO> makeListCommentDTO(List<Comment> comments,
+                                                User user) {
         return comments.stream()
-                .map(this::makeCommentDTO)
+                .map((comment) -> makeCommentDTO(comment, user))
                 .toList();
     }
 
-    private CommentDTO makeCommentDTO(Comment comment) {
+    private CommentDTO makeCommentDTO(Comment comment,
+                                      User user) {
         Vote vote = voteRepository.findVoteByCommentAndUser(comment, comment.getUser())
                 .orElseGet(() -> {
                     Vote empty = new Vote();
@@ -151,6 +156,10 @@ public class CommentService {
                     empty.setVote(0);
                     return empty;
                 });
+        if (blockRepository.existsByUserIdAndBlockId(comment.getUser().getId(), user.getId()))
+            comment.setMessage("This user blocked you.");
+        if (blockRepository.existsByUserIdAndBlockId(user.getId(), comment.getUser().getId()))
+            comment.setMessage("This user is blocked.");
 
         return new CommentDTO(
                 comment.getId(),
