@@ -1,10 +1,10 @@
 package com.kanhika.dto.comment;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record CommentPostDTO(
     @NotBlank
-    @Column(length = 2000)
+    @Size(max = 2000)
     String message
 ) {}
