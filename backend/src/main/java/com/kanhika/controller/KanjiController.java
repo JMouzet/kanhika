@@ -1,12 +1,15 @@
 package com.kanhika.controller;
 
+import com.kanhika.dto.comment.CommentDTO;
+import com.kanhika.dto.comment.CommentPostDTO;
 import com.kanhika.dto.kanji.KanjiDTO;
+import com.kanhika.service.CommentService;
 import com.kanhika.service.KanjiService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,9 +18,12 @@ import java.util.List;
 public class KanjiController {
 
     private final KanjiService kanjiService;
+    private final CommentService commentService;
 
-    public KanjiController(KanjiService kanjiService) {
+    public KanjiController(KanjiService kanjiService,
+                           CommentService commentService) {
         this.kanjiService = kanjiService;
+        this.commentService = commentService;
     }
 
     @GetMapping("/{kanji}")
@@ -38,5 +44,17 @@ public class KanjiController {
     @GetMapping("/search/{input}")
     public ResponseEntity<List<KanjiDTO>> searchKanjis(@PathVariable String input) {
         return ResponseEntity.ok(kanjiService.searchKanjis(input));
+    }
+
+    @GetMapping("/{kanji}/comments")
+    public ResponseEntity<List<CommentDTO>> getComments(@PathVariable String kanji) {
+        return ResponseEntity.ok(commentService.getComments(kanji));
+    }
+
+    @PostMapping("/{kanji}/comments")
+    public ResponseEntity<CommentDTO> sendComment(@AuthenticationPrincipal UserDetails userDetails,
+                                  @PathVariable String kanji,
+                                  @RequestBody @Valid CommentPostDTO request) {
+        return ResponseEntity.ok(commentService.sendComment(userDetails.getUsername(), kanji, request));
     }
 }
