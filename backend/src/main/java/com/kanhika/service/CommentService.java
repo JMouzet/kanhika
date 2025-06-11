@@ -39,7 +39,7 @@ public class CommentService {
         Kanji kanjiObj = kanjiRepository.findByKanji(kanji)
                 .orElseThrow(() -> new ResourceNotFoundException("Kanji not found."));
 
-        List<Comment> comments = commentRepository.findAllByKanji(kanjiObj);
+        List<Comment> comments = commentRepository.findAllByKanjiAndDeletedFalse(kanjiObj);
 
         return makeListCommentDTO(comments);
     }
@@ -67,7 +67,7 @@ public class CommentService {
                                   CommentPostDTO request) {
         User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
-        Comment comment = commentRepository.findById(id)
+        Comment comment = commentRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found."));
 
         if (!user.equals(comment.getUser())) {
@@ -83,6 +83,21 @@ public class CommentService {
         return makeCommentDTO(comment);
     }
 
+    public void deleteComment(String username,
+                              int id) {
+        User user = userRepository.findByUsernameIgnoreCaseAndDisabledFalse(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Unexpected error."));
+        Comment comment = commentRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found."));
+
+        if (!user.equals(comment.getUser())) {
+            throw new UnauthorizedException("You are not allowed to delete this comment.");
+        }
+
+        comment.setDeleted(true);
+        commentRepository.save(comment);
+    }
+
 
     private List<CommentDTO> makeListCommentDTO(List<Comment> comments) {
         return comments.stream()
@@ -91,8 +106,6 @@ public class CommentService {
     }
 
     private CommentDTO makeCommentDTO(Comment comment) {
-        if (comment.isDeleted())
-            return null;
         return new CommentDTO(
                 comment.getId(),
                 comment.getUser().getUsername(),

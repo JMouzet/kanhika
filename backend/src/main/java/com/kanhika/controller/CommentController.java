@@ -29,4 +29,11 @@ public class CommentController {
                                                   @RequestBody @Valid CommentPostDTO request) {
         return ResponseEntity.ok(commentService.editComment(userDetails.getUsername(), id, request));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal UserDetails userDetails,
+                                              @PathVariable int id) {
+        commentService.deleteComment(userDetails.getUsername(), id);
+        return ResponseEntity.noContent().build();
+    }
 }

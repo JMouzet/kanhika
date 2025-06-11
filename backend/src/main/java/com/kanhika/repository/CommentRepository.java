@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     // Get all comments from a kanji page
-    List<Comment> findAllByKanji(@Param("kanji") Kanji kanji);
+    List<Comment> findAllByKanjiAndDeletedFalse(@Param("kanji") Kanji kanji);
 
     // Get comment by id
-    Optional<Comment> findById(int id);
+    Optional<Comment> findByIdAndDeletedFalse(int id);
 }
