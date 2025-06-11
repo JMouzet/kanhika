@@ -34,4 +34,9 @@ public class KanjiController {
     public ResponseEntity<List<KanjiDTO>> getKanjisByJlpt(@PathVariable int level) {
         return ResponseEntity.ok(kanjiService.getKanjisByJlpt(level));
     }
+
+    @GetMapping("/search/{input}")
+    public ResponseEntity<List<KanjiDTO>> searchKanjis(@PathVariable String input) {
+        return ResponseEntity.ok(kanjiService.searchKanjis(input));
+    }
 }

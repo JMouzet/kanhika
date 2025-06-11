@@ -8,6 +8,8 @@ public record KanjiDTO(
         int jlpt,
         int strokes,
         List<String> meanings,
-        List<String> kunReadings,
-        List<String> onReadings
+        List<String> kunReadingsKana,
+        List<String> kunReadingsRoma,
+        List<String> onReadingsKana,
+        List<String> onReadingsRoma
 ) {}

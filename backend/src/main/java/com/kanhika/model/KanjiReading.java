@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class KanjiReadings {
+public class KanjiReading {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

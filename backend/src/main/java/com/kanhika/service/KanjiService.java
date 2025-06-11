@@ -8,11 +8,15 @@ import com.kanhika.model.Reading;
 import com.kanhika.repository.KanjiRepository;
 import com.kanhika.repository.MeaningRepository;
 import com.kanhika.repository.ReadingRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.moji4j.MojiConverter;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class KanjiService {
@@ -33,58 +37,115 @@ public class KanjiService {
         Kanji kanjiInfo = kanjiRepository.findByKanji(kanji)
                 .orElseThrow(() -> new ResourceNotFoundException("Kanji not found."));
 
-        return new KanjiDTO(
-                kanjiInfo.getKanji(),
-                kanjiInfo.getGrade(),
-                kanjiInfo.getJlpt(),
-                kanjiInfo.getStrokeCount(),
-                meaningRepository.findAllByKanji(kanjiInfo.getKanji())
-                        .stream()
-                        .map(Meaning::getMeaning)
-                        .toList(),
-                readingRepository.findAllOnByKanji(kanjiInfo.getKanji())
-                        .stream()
-                        .map(Reading::getReading)
-                        .toList(),
-                readingRepository.findAllOnByKanji(kanjiInfo.getKanji())
-                        .stream()
-                        .map(Reading::getReading)
-                        .toList()
-        );
+        return makeKanjiDTO(kanjiInfo);
     }
 
     public List<KanjiDTO> getKanjisByGrade(int level) {
         List<Kanji> kanjis = kanjiRepository.findAllByGrade(level);
 
-        return makeKanjiListDTO(kanjis);
+        return makeListKanjiDTO(kanjis);
     }
 
     public List<KanjiDTO> getKanjisByJlpt(int level) {
         List<Kanji> kanjis = kanjiRepository.findAllByJlpt(level);
 
-        return makeKanjiListDTO(kanjis);
+        return makeListKanjiDTO(kanjis);
+    }
+
+    public List<KanjiDTO> searchKanjis(String input) {
+        MojiConverter converter = new MojiConverter();
+
+        // Search by kanji
+        List<KanjiDTO> kanjis = new ArrayList<>();
+        try {
+            kanjis = Collections.singletonList(getKanji(input));
+        } catch (ResourceNotFoundException ignored) {}
+
+        // Search by meaning exact
+        List<KanjiDTO> meaningsExact = makeListKanjiDTO(meaningRepository.findAllByMeaningExact(input));
+
+        // Search by reading exact
+        List<KanjiDTO> readingsExact = makeListKanjiDTO(readingRepository.findAllByReadingExact(
+                converter.convertRomajiToKatakana(
+                        converter.convertKanaToRomaji(input))));
+
+        // Search by meaning starting with
+        List<KanjiDTO> meaningsStarting = makeListKanjiDTO(meaningRepository.findAllByMeaningStarting(input));
+
+        // Search by reading starting with
+        List<KanjiDTO> readingsStarting = makeListKanjiDTO(readingRepository.findAllByReadingStarting(
+                converter.convertRomajiToKatakana(
+                        converter.convertKanaToRomaji(input))));
+
+        // Search by meaning contains
+        List<KanjiDTO> meaningsContains = makeListKanjiDTO(meaningRepository.findAllByMeaningContains(input));
+
+        // Search by reading contains
+        List<KanjiDTO> readingsContains = makeListKanjiDTO(readingRepository.findAllByReadingContains(
+                converter.convertRomajiToKatakana(
+                        converter.convertKanaToRomaji(input))));
+
+        return new ArrayList<>(
+                Stream.of(
+                        kanjis,
+                        meaningsExact,
+                        readingsExact,
+                        meaningsStarting,
+                        readingsStarting,
+                        meaningsContains,
+                        readingsContains
+                )
+                .flatMap(List::stream)
+                .collect(Collectors.toMap(
+                        KanjiDTO::kanji,
+                        d -> d,
+                        (existing, replacement) -> existing,
+                        LinkedHashMap::new
+                ))
+                .values()
+        );
     }
 
 
-    private List<KanjiDTO> makeKanjiListDTO(List<Kanji> kanjis) {
+    private List<KanjiDTO> makeListKanjiDTO(List<Kanji> kanjis) {
         return kanjis.stream()
-                .map(kanji -> new KanjiDTO(
-                        kanji.getKanji(),
-                        kanji.getGrade(),
-                        kanji.getJlpt(),
-                        kanji.getStrokeCount(),
-                        meaningRepository.findAllByKanji(kanji.getKanji())
-                                .stream()
-                                .map(Meaning::getMeaning)
-                                .toList(),
-                        readingRepository.findAllOnByKanji(kanji.getKanji())
-                                .stream()
-                                .map(Reading::getReading)
-                                .toList(),
-                        readingRepository.findAllOnByKanji(kanji.getKanji())
-                                .stream()
-                                .map(Reading::getReading)
-                                .toList()
-                )).toList();
+                .map(this::makeKanjiDTO)
+                .toList();
+    }
+
+    private KanjiDTO makeKanjiDTO(Kanji kanji) {
+        MojiConverter converter = new MojiConverter();
+
+        // Get readings in kana form
+        List<String> kunReadingsKana = readingRepository.findAllOnByKanji(kanji.getKanji())
+                .stream()
+                .map(Reading::getReading)
+                .toList();
+        List<String> onReadingsKana = readingRepository.findAllOnByKanji(kanji.getKanji())
+                .stream()
+                .map(Reading::getReading)
+                .toList();
+        // Get converted reading in Romaji form
+        List<String> kunReadingRoma = kunReadingsKana.stream()
+                .map(converter::convertKanaToRomaji)
+                .toList();
+        List<String> onReadingRoma = onReadingsKana.stream()
+                .map(converter::convertKanaToRomaji)
+                .toList();
+
+        return new KanjiDTO(
+                kanji.getKanji(),
+                kanji.getGrade(),
+                kanji.getJlpt(),
+                kanji.getStrokeCount(),
+                meaningRepository.findAllByKanji(kanji.getKanji())
+                        .stream()
+                        .map(Meaning::getMeaning)
+                        .toList(),
+                kunReadingsKana,
+                kunReadingRoma,
+                onReadingsKana,
+                onReadingRoma
+        );
     }
 }
