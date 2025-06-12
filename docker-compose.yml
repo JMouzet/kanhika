@@ -33,15 +33,22 @@ services:
       - db
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     container_name: kanhika-frontend
     restart: no
     ports:
-      - "${FRONTEND_PORT}:80"
+      - "${FRONTEND_PORT}:3000"
     networks:
       - kanhika-net
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
+    environment:
+      - NODE_ENV=development
 
 volumes:
   postgres_data:

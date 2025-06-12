@@ -58,3 +58,4 @@
 
 # Debug cleaning
 - Remove exception message in the default exception handler
+- Run project in prod before pushing to main
