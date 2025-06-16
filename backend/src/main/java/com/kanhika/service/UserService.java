@@ -56,7 +56,11 @@ public class UserService {
         return new UserSelfDTO(
                 user.getUsername(),
                 user.getBio(),
-                user.getEmail()
+                user.getEmail(),
+                user.getExp(),
+                user.getFlame(),
+                user.getRole(),
+                user.getCreatedAt()
         );
     }
 
