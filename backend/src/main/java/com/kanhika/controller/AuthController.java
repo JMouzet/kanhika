@@ -4,6 +4,7 @@ import com.kanhika.dto.auth.AuthDTO;
 import com.kanhika.dto.auth.LoginDTO;
 import com.kanhika.dto.auth.RegisterDTO;
 import com.kanhika.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,12 +22,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthDTO> register(@RequestBody RegisterDTO request) {
+    public ResponseEntity<AuthDTO> register(@RequestBody @Valid RegisterDTO request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthDTO> login(@RequestBody LoginDTO request) {
+    public ResponseEntity<AuthDTO> login(@RequestBody @Valid LoginDTO request) {
         return ResponseEntity.ok(authService.login(request));
     }
 }
