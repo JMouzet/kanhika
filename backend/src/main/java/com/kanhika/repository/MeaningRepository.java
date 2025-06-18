@@ -25,9 +25,13 @@ public interface MeaningRepository extends JpaRepository<Meaning, Long> {
         SELECT m.kanji
         FROM KanjiMeaning m
         WHERE m.meaning.meaning = :input
+        AND (:grade IS NULL OR m.kanji.grade = :grade)
+        AND (:jlpt IS NULL OR m.kanji.jlpt = :jlpt)
         ORDER BY m.isDefault DESC
     """)
-    List<Kanji> findAllByMeaningExact(@Param("input") String input);
+    List<Kanji> findAllByMeaningExact(@Param("input") String input,
+                                      @Param("grade") Integer grade,
+                                      @Param("jlpt") Integer jlpt);
 
     // Return a list of kanji matching with its meaning starting with
     // Default comes first
@@ -35,9 +39,13 @@ public interface MeaningRepository extends JpaRepository<Meaning, Long> {
         SELECT m.kanji
         FROM KanjiMeaning m
         WHERE m.meaning.meaning LIKE :input%
+        AND (:grade IS NULL OR m.kanji.grade = :grade)
+        AND (:jlpt IS NULL OR m.kanji.jlpt = :jlpt)
         ORDER BY m.isDefault DESC
     """)
-    List<Kanji> findAllByMeaningStarting(@Param("input") String input);
+    List<Kanji> findAllByMeaningStarting(@Param("input") String input,
+                                         @Param("grade") Integer grade,
+                                         @Param("jlpt") Integer jlpt);
 
     // Return a list of kanji matching with its meaning containing
     // Default comes first
@@ -45,7 +53,11 @@ public interface MeaningRepository extends JpaRepository<Meaning, Long> {
         SELECT m.kanji
         FROM KanjiMeaning m
         WHERE m.meaning.meaning LIKE %:input%
+        AND (:grade IS NULL OR m.kanji.grade = :grade)
+        AND (:jlpt IS NULL OR m.kanji.jlpt = :jlpt)
         ORDER BY m.isDefault DESC
     """)
-    List<Kanji> findAllByMeaningContains(@Param("input") String input);
+    List<Kanji> findAllByMeaningContains(@Param("input") String input,
+                                         @Param("grade") Integer grade,
+                                         @Param("jlpt") Integer jlpt);
 }

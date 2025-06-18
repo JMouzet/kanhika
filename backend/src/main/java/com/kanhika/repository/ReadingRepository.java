@@ -33,8 +33,12 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
         SELECT r.kanji
         FROM KanjiReading r
         WHERE r.reading.reading = :input
+        AND (:grade IS NULL OR r.kanji.grade = :grade)
+        AND (:jlpt IS NULL OR r.kanji.jlpt = :jlpt)
     """)
-    List<Kanji> findAllByReadingExact(@Param("input") String input);
+    List<Kanji> findAllByReadingExact(@Param("input") String input,
+                                      @Param("grade") Integer grade,
+                                      @Param("jlpt") Integer jlpt);
 
     // Return a list of kanji matching with its reading starting with
     // Default comes first
@@ -42,8 +46,12 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
         SELECT r.kanji
         FROM KanjiReading r
         WHERE r.reading.reading LIKE :input%
+        AND (:grade IS NULL OR r.kanji.grade = :grade)
+        AND (:jlpt IS NULL OR r.kanji.jlpt = :jlpt)
     """)
-    List<Kanji> findAllByReadingStarting(@Param("input") String input);
+    List<Kanji> findAllByReadingStarting(@Param("input") String input,
+                                         @Param("grade") Integer grade,
+                                         @Param("jlpt") Integer jlpt);
 
     // Return a list of kanji matching with its reading containing
     // Default comes first
@@ -51,6 +59,10 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
         SELECT r.kanji
         FROM KanjiReading r
         WHERE r.reading.reading LIKE %:input%
+        AND (:grade IS NULL OR r.kanji.grade = :grade)
+        AND (:jlpt IS NULL OR r.kanji.jlpt = :jlpt)
     """)
-    List<Kanji> findAllByReadingContains(@Param("input") String input);
+    List<Kanji> findAllByReadingContains(@Param("input") String input,
+                                         @Param("grade") Integer grade,
+                                         @Param("jlpt") Integer jlpt);
 }

@@ -1,6 +1,7 @@
 package com.kanhika.service;
 
 import com.kanhika.dto.kanji.KanjiDTO;
+import com.kanhika.dto.kanji.KanjiSearchDTO;
 import com.kanhika.exception.ResourceNotFoundException;
 import com.kanhika.model.Kanji;
 import com.kanhika.model.Meaning;
@@ -40,54 +41,50 @@ public class KanjiService {
         return makeKanjiDTO(kanjiInfo);
     }
 
-    public List<KanjiDTO> getKanjisByGrade(int level) {
-        List<Kanji> kanjis = kanjiRepository.findAllByGrade(level);
-
-        return makeListKanjiDTO(kanjis);
-    }
-
-    public List<KanjiDTO> getKanjisByJlpt(int level) {
-        List<Kanji> kanjis = kanjiRepository.findAllByJlpt(level);
-
-        return makeListKanjiDTO(kanjis);
-    }
-
-    public List<KanjiDTO> searchKanjis(String input) {
+    public KanjiSearchDTO searchKanjis(String input, Integer grade, Integer jlpt, Integer page) {
         MojiConverter converter = new MojiConverter();
 
         // Search by kanji
-        List<KanjiDTO> kanjis = new ArrayList<>();
         try {
-            kanjis = Collections.singletonList(getKanji(input));
+            List<KanjiDTO> singleKanji = Collections.singletonList(getKanji(input));
+            return new KanjiSearchDTO(
+                    1,
+                    1,
+                    1,
+                    1,
+                    singleKanji
+            );
         } catch (ResourceNotFoundException ignored) {}
 
         // Search by meaning exact
-        List<KanjiDTO> meaningsExact = makeListKanjiDTO(meaningRepository.findAllByMeaningExact(input));
+        List<Kanji> meaningsExact = meaningRepository.findAllByMeaningExact(input, grade, jlpt);
 
         // Search by reading exact
-        List<KanjiDTO> readingsExact = makeListKanjiDTO(readingRepository.findAllByReadingExact(
+        List<Kanji> readingsExact = readingRepository.findAllByReadingExact(
                 converter.convertRomajiToKatakana(
-                        converter.convertKanaToRomaji(input))));
+                        converter.convertKanaToRomaji(input)),
+                grade, jlpt);
 
         // Search by meaning starting with
-        List<KanjiDTO> meaningsStarting = makeListKanjiDTO(meaningRepository.findAllByMeaningStarting(input));
+        List<Kanji> meaningsStarting = meaningRepository.findAllByMeaningStarting(input, grade, jlpt);
 
         // Search by reading starting with
-        List<KanjiDTO> readingsStarting = makeListKanjiDTO(readingRepository.findAllByReadingStarting(
+        List<Kanji> readingsStarting = readingRepository.findAllByReadingStarting(
                 converter.convertRomajiToKatakana(
-                        converter.convertKanaToRomaji(input))));
+                        converter.convertKanaToRomaji(input)),
+                grade, jlpt);
 
         // Search by meaning contains
-        List<KanjiDTO> meaningsContains = makeListKanjiDTO(meaningRepository.findAllByMeaningContains(input));
+        List<Kanji> meaningsContains = meaningRepository.findAllByMeaningContains(input, grade, jlpt);
 
         // Search by reading contains
-        List<KanjiDTO> readingsContains = makeListKanjiDTO(readingRepository.findAllByReadingContains(
+        List<Kanji> readingsContains = readingRepository.findAllByReadingContains(
                 converter.convertRomajiToKatakana(
-                        converter.convertKanaToRomaji(input))));
+                        converter.convertKanaToRomaji(input)),
+                grade, jlpt);
 
-        return new ArrayList<>(
+        List<Kanji> resultAll = new ArrayList<>(
                 Stream.of(
-                        kanjis,
                         meaningsExact,
                         readingsExact,
                         meaningsStarting,
@@ -97,12 +94,39 @@ public class KanjiService {
                 )
                 .flatMap(List::stream)
                 .collect(Collectors.toMap(
-                        KanjiDTO::kanji,
+                        Kanji::getKanji,
                         d -> d,
                         (existing, replacement) -> existing,
                         LinkedHashMap::new
                 ))
                 .values()
+        );
+
+        int maxPages = (int) Math.ceil((double) resultAll.size() / 20);
+        if (maxPages < 1) maxPages = 1;
+
+        // Adapt page if below 0 or above maximum found
+        if (page < 1) page = 1;
+        if (page > maxPages) page = maxPages;
+        int fromIndex = (page - 1) * 20;
+        int toIndex = Math.min(fromIndex + 20, resultAll.size());
+
+        if (fromIndex >= resultAll.size()) return new KanjiSearchDTO(
+                0,
+                page,
+                resultAll.size(),
+                maxPages,
+                List.of()
+        );
+
+        List<Kanji> resultPaged = resultAll.subList(fromIndex, toIndex);
+
+        return new KanjiSearchDTO(
+                resultPaged.size(),
+                page,
+                resultAll.size(),
+                maxPages,
+                makeListKanjiDTO(resultPaged)
         );
     }
 

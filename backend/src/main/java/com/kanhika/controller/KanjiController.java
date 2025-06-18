@@ -3,6 +3,7 @@ package com.kanhika.controller;
 import com.kanhika.dto.comment.CommentDTO;
 import com.kanhika.dto.comment.CommentPostDTO;
 import com.kanhika.dto.kanji.KanjiDTO;
+import com.kanhika.dto.kanji.KanjiSearchDTO;
 import com.kanhika.service.CommentService;
 import com.kanhika.service.KanjiService;
 import jakarta.validation.Valid;
@@ -31,19 +32,19 @@ public class KanjiController {
         return ResponseEntity.ok(kanjiService.getKanji(kanji));
     }
 
-    @GetMapping("/grade/{level}")
-    public ResponseEntity<List<KanjiDTO>> getKanjisByGrade(@PathVariable int level) {
-        return ResponseEntity.ok(kanjiService.getKanjisByGrade(level));
-    }
-
-    @GetMapping("/jlpt/{level}")
-    public ResponseEntity<List<KanjiDTO>> getKanjisByJlpt(@PathVariable int level) {
-        return ResponseEntity.ok(kanjiService.getKanjisByJlpt(level));
-    }
-
     @GetMapping("/search/{input}")
-    public ResponseEntity<List<KanjiDTO>> searchKanjis(@PathVariable String input) {
-        return ResponseEntity.ok(kanjiService.searchKanjis(input));
+    public ResponseEntity<KanjiSearchDTO> searchKanjis(@PathVariable String input,
+                                                       @RequestParam(required = false) Integer grade,
+                                                       @RequestParam(required = false) Integer jlpt,
+                                                       @RequestParam(name = "page", defaultValue = "1") Integer page) {
+        return ResponseEntity.ok(kanjiService.searchKanjis(input, grade, jlpt, page));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<KanjiSearchDTO> searchKanjis(@RequestParam(required = false) Integer grade,
+                                                       @RequestParam(required = false) Integer jlpt,
+                                                       @RequestParam(name = "page", defaultValue = "1") Integer page) {
+        return ResponseEntity.ok(kanjiService.searchKanjis("", grade, jlpt, page));
     }
 
     @GetMapping("/{kanji}/comments")
