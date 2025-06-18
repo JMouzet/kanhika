@@ -167,7 +167,6 @@ public class CommentService {
                 comment.getMessage(),
                 voteRepository.findSumVote(comment),
                 vote.getVote(),
-                false,
                 comment.getCreatedAt(),
                 comment.getUpdatedAt()
         );
