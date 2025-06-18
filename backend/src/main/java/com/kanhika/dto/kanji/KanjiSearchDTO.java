@@ -6,6 +6,6 @@ public record KanjiSearchDTO(
         int found,
         int page,
         int total,
-        int totalPage,
+        int totalPages,
         List<KanjiDTO> kanjis
 ) {}
