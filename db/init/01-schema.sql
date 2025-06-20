@@ -119,10 +119,11 @@ CREATE TABLE "questions" (
   "kanji_id" int NOT NULL,
   "question_type" int NOT NULL,
   "correct_answer" varchar(255) NOT NULL,
-  "wrong_answer_1" varchar(255),
-  "wrong_answer_2" varchar(255),
-  "wrong_answer_3" varchar(255),
-  "given_answer" varchar(255)
+  "wrong_answer1" varchar(255) NOT NULL,
+  "wrong_answer2" varchar(255) NOT NULL,
+  "wrong_answer3" varchar(255) NOT NULL,
+  "given_answer" varchar(255),
+  "created_at" timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)
 );
 
 CREATE INDEX "FK-m_kanji" ON "kanjis_meanings" ("kanji");
