@@ -393,7 +393,7 @@ public class QuizService {
 
         return new ResultDTO(
                 answerIs,
-                answers.get(answerNo),
+                question.getCorrectAnswer(),
                 quizScore,
                 quizTotal,
                 end
