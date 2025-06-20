@@ -49,8 +49,8 @@
 - DELETE /api/messages/{id} <= Delete a message, check the Bearer token (no ADMIN actions possible here)
 
 ## Quizzes
-- GET /api/quizzes <= Get a potentially uncleared quiz
-- POST /api/quizzes <= Generate a quiz, return the quiz id and the first question
+- <span style="color: green;">GET /api/quizzes <= Get a potentially uncleared quiz</span>
+- <span style="color: green;">POST /api/quizzes <= Generate a quiz, return the quiz id</span>
 - GET /api/quizzes/{id}/questions <= Get the next question
 - POST /api/quizzes/{id}/questions/{id} <= Send the answer, return the result and change the score statistics
 

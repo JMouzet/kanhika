@@ -2,6 +2,7 @@ package com.kanhika.service;
 
 import com.kanhika.dto.user.*;
 import com.kanhika.exception.ConflictException;
+import com.kanhika.exception.InvalidFormatException;
 import com.kanhika.model.Block;
 import com.kanhika.model.Follow;
 import com.kanhika.model.User;
@@ -79,6 +80,11 @@ public class UserService {
 
     public UserUsernameDTO patchUserUsername(String username,
                                              UserUsernameDTO request) {
+        // Check username format, must be only letters, numbers, '-' and '_'
+        if (!request.username().matches("^[a-zA-Z0-9-_]+$")) {
+            throw new InvalidFormatException("Username can only contain letters, numbers, '-' and '_'.");
+        }
+
         // Check username uniqueness
         if (userRepository.existsByUsernameIgnoreCase(request.username())) {
             throw new ConflictException("This username is already taken.");
@@ -97,6 +103,11 @@ public class UserService {
 
     public UserEmailDTO patchUserEmail(String username,
                                        UserEmailDTO request) {
+        // Check email format, + addresses not allowed
+        if (!request.email().matches("^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+            throw new InvalidFormatException("Invalid email format.");
+        }
+
         // Check email uniqueness
         if (userRepository.existsByEmailUsedOrBanned(request.email())) {
             throw new ConflictException("There is already an account linked with this email address.");
