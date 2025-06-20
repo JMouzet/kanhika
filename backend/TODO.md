@@ -51,8 +51,8 @@
 ## Quizzes
 - <span style="color: green;">GET /api/quizzes <= Get a potentially uncleared quiz</span>
 - <span style="color: green;">POST /api/quizzes <= Generate a quiz, return the quiz id</span>
-- GET /api/quizzes/{id}/questions <= Get the next question
-- POST /api/quizzes/{id}/questions/{id} <= Send the answer, return the result and change the score statistics
+- <span style="color: green;">GET /api/quizzes/{id}/questions <= Get the next question. Generate a new one if not exists</span>
+- <span style="color: green;">POST /api/quizzes/{id}/questions/{id} <= Send the answer, return the result and change the score statistics</span>
 
 
 # Debug cleaning

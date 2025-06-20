@@ -1,6 +1,7 @@
 package com.kanhika.repository;
 
 import com.kanhika.model.Kanji;
+import com.kanhika.model.KanjiMeaning;
 import com.kanhika.model.Meaning;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -60,4 +61,27 @@ public interface MeaningRepository extends JpaRepository<Meaning, Long> {
     List<Kanji> findAllByMeaningContains(@Param("input") String input,
                                          @Param("grade") Integer grade,
                                          @Param("jlpt") Integer jlpt);
+
+    // Return the full list of meanings based on grade or jlpt
+    @Query("""
+        SELECT m.meaning
+        FROM KanjiMeaning m
+        WHERE (:grade IS NULL OR m.kanji.grade = :grade)
+        AND (:jlpt IS NULL OR m.kanji.jlpt = :jlpt)
+    """)
+    List<Meaning> findAllByGradeAndJlpt(@Param("grade") Integer grade,
+                                        @Param("jlpt") Integer jlpt);
+
+    // Return a list of kanji matching with its exact meaning, grade and jlpt
+    // No need to order
+    @Query("""
+        SELECT m.kanji
+        FROM KanjiMeaning m
+        WHERE m.meaning.meaning = :input
+        AND (:grade IS NULL OR m.kanji.grade = :grade)
+        AND (:jlpt IS NULL OR m.kanji.jlpt = :jlpt)
+    """)
+    List<Kanji> findAllByMeaningAndGradeAndJlpt(@Param("input") String input,
+                                                @Param("grade") Integer grade,
+                                                @Param("jlpt") Integer jlpt);
 }

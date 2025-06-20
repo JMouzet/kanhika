@@ -1,7 +1,6 @@
 package com.kanhika.controller;
 
-import com.kanhika.dto.quiz.QuizInDTO;
-import com.kanhika.dto.quiz.QuizOutDTO;
+import com.kanhika.dto.quiz.*;
 import com.kanhika.service.QuizService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +27,19 @@ public class QuizController {
     public ResponseEntity<QuizOutDTO> makeQuiz(@AuthenticationPrincipal UserDetails userDetails,
                                                @RequestBody @Valid QuizInDTO request) {
         return ResponseEntity.ok(quizService.makeQuiz(userDetails.getUsername(), request));
+    }
+
+    @GetMapping("/{quiz}/questions")
+    public ResponseEntity<QuestionDTO> getQuestion(@AuthenticationPrincipal UserDetails userDetails,
+                                                   @PathVariable int quiz) {
+        return ResponseEntity.ok(quizService.getQuestion(userDetails.getUsername(), quiz));
+    }
+
+    @PostMapping("/{quiz}/questions/{question}")
+    public ResponseEntity<ResultDTO> sendAnswer(@AuthenticationPrincipal UserDetails userDetails,
+                                                @PathVariable int quiz,
+                                                @PathVariable int question,
+                                                @RequestBody @Valid AnswerDTO answer) {
+        return ResponseEntity.ok(quizService.sendAnswer(userDetails.getUsername(), quiz, question, answer.answerNo()));
     }
 }

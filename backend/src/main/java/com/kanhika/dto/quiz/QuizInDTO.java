@@ -13,11 +13,11 @@ public record QuizInDTO(
         @NotNull
         @DecimalMin("5")
         @DecimalMax("30")
-        int questions_number,
+        Integer questions_number,
 
         @NotBlank
         String difficulty_type,
 
         @NotNull
-        int difficulty_number
+        Integer difficulty_number
 ) {}
