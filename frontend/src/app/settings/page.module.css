@@ -1,0 +1,67 @@
+.container {
+  padding: 2rem;
+  background-color: #fff5f8;
+  min-height: 100vh;
+  max-width: 600px;
+  margin: auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 1rem;
+  margin-top: 80px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.input {
+  margin-top: 0.3rem;
+  padding: 0.5rem;
+  border: 2px solid hotpink;
+  border-radius: 6px;
+}
+
+.button {
+  align-self: flex-end;
+  background-color: hotpink;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.success {
+  text-align: center;
+  margin: 1rem 0;
+  font-weight: bold;
+  color: seagreen;
+}
+
+.error {
+  text-align: center;
+  margin: 1rem 0;
+  font-weight: bold;
+  color: crimson;
+}
+
+.message {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.separator {
+  margin: 2rem 0;
+  border: none;
+  border-top: 2px solid #f0c3d8;
+}

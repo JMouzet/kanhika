@@ -1,0 +1,42 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--nav-primary);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  width: 100%;
+}
+
+.topbar-logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  margin: 12px;
+}
+
+.topbar-search {
+  flex-grow: 1;
+  max-width: 400px;
+  min-width: 10px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  font-size: 14px;
+  background-color: var(--nav-secondary);
+  color: white;
+}
+
+.topbar-icons {
+  display: flex;
+  gap: 12px;
+  margin: 12px;
+}
+
+.topbar-icon {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}

@@ -1,0 +1,74 @@
+.container {
+  padding: 2rem;
+  background-color: var(--background-main);
+  min-height: 100vh;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 1rem;
+  margin-top: 80px;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.filters button {
+  margin: 0 0.3rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 2px solid var(--nav-primary);
+  background: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.filters .selected {
+  background: var(--nav-primary);
+  color: white;
+}
+
+.search {
+  width: 100%;
+  max-width: 400px;
+  margin: 1rem auto;
+  display: block;
+  padding: 0.5rem;
+  border: 2px solid var(--nav-primary);
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto;
+  border-collapse: collapse;
+  background: white;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.table th {
+  padding: 0.8rem;
+  background-color: var(--nav-secondary);
+  color: white;
+}
+
+.table tr:hover {
+  background-color: var(--background-hover);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
