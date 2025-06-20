@@ -4,7 +4,7 @@ import TopBar from '@/components/topBar';
 import { UserProvider } from '@/contexts/userContext';
 
 const kosugiMaru = Kosugi_Maru({
-  subsets: ['latin', 'japanese'],
+  subsets: ['latin'],
   weight: '400',
   display: 'swap',
   variable: '--font-kosugi-maru',
