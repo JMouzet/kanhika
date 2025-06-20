@@ -141,7 +141,7 @@ public class KanjiService {
         MojiConverter converter = new MojiConverter();
 
         // Get readings in kana form
-        List<String> kunReadingsKana = readingRepository.findAllOnByKanji(kanji.getKanji())
+        List<String> kunReadingsKana = readingRepository.findAllKunByKanji(kanji.getKanji())
                 .stream()
                 .map(Reading::getReading)
                 .toList();
