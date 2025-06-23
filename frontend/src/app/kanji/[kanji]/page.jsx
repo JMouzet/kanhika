@@ -19,11 +19,12 @@ export default function KanjiPage() {
   const [editedMessage, setEditedMessage] = useState('');
   const myUser = useUser();
   const token = Cookies.get('token');
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   useEffect(() => {
     const fetchKanji = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/kanjis/${kanji}`, {
+        const res = await fetch(`${API_URL}/api/kanjis/${kanji}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ export default function KanjiPage() {
 
     const fetchComments = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/kanjis/${kanji}/comments`, {
+        const res = await fetch(`${API_URL}/api/kanjis/${kanji}/comments`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ export default function KanjiPage() {
     setIsSending(true);
     try {
       const token = Cookies.get('token');
-      const res = await fetch(`http://localhost:8080/api/kanjis/${kanji}/comments`, {
+      const res = await fetch(`${API_URL}/api/kanjis/${kanji}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,13 +95,13 @@ export default function KanjiPage() {
       let route;
       switch (value) {
         case 1:
-          route = `http://localhost:8080/api/comments/${commentId}/vote/up`;
+          route = `${API_URL}/api/comments/${commentId}/vote/up`;
           break;
         case -1:
-          route = `http://localhost:8080/api/comments/${commentId}/vote/down`;
+          route = `${API_URL}/api/comments/${commentId}/vote/down`;
           break;
         default:
-          route = `http://localhost:8080/api/comments/${commentId}/vote`;
+          route = `${API_URL}/api/comments/${commentId}/vote`;
           break;
       }
       const res = await fetch(route, {
@@ -137,7 +138,7 @@ export default function KanjiPage() {
   const saveEdit = async (id) => {
     try {
       const token = Cookies.get('token');
-      const res = await fetch(`http://localhost:8080/api/comments/${id}`, {
+      const res = await fetch(`${API_URL}/api/comments/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -168,7 +169,7 @@ export default function KanjiPage() {
 
     try {
       const token = Cookies.get('token');
-      const res = await fetch(`http://localhost:8080/api/comments/${id}`, {
+      const res = await fetch(`${API_URL}/api/comments/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

@@ -13,11 +13,12 @@ export default function QuizHomePage() {
   const [questionCount, setQuestionCount] = useState(10);
   const router = useRouter();
   const token = Cookies.get('token');
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/quizzes', {
+        const res = await fetch(`${API_URL}/api/quizzes`, {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -42,7 +43,7 @@ export default function QuizHomePage() {
     const difficulty_number = grade || jlpt || 0;
 
     try {
-      const res = await fetch('http://localhost:8080/api/quizzes', {
+      const res = await fetch(`${API_URL}/api/quizzes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

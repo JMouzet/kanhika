@@ -25,6 +25,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION}
+      FRONTEND_DOMAIN: ${FRONTEND_DOMAIN}
     ports:
       - "${BACKEND_PORT}:8080"
     networks:
@@ -35,21 +36,21 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
+      args:
+        NEXT_PUBLIC_FRONTEND_DOMAIN: ${FRONTEND_DOMAIN}
+        NEXT_PUBLIC_API_URL: ${API_URL}
     container_name: kanhika-frontend
     restart: no
+    environment:
+      NEXT_PUBLIC_FRONTEND_DOMAIN: ${FRONTEND_DOMAIN}
+      NEXT_PUBLIC_API_URL: ${API_URL}
     ports:
       - "${FRONTEND_PORT}:3000"
     networks:
       - kanhika-net
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     depends_on:
       - backend
-    environment:
-      - NODE_ENV=development
-
 volumes:
   postgres_data:
 

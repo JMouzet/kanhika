@@ -12,20 +12,38 @@ export function UserProvider({ children }) {
   const [flame, setFlame] = useState(null);
   const [role, setRole] = useState(null);
   const [creationDate, setCreationDate] = useState(null);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   const token = Cookies.get('token');
 
   const refreshUser = async () => {
+    if (!token) {
+      setUsername(null);
+      setBio(null);
+      setEmail(null);
+      setExp(null);
+      setFlame(null);
+      setRole(null);
+      setCreationDate(null);
+      return;
+    }
+
     try {
       await fetchUser();
     } catch {
-      setUser(null);
+      setUsername(null);
+      setBio(null);
+      setEmail(null);
+      setExp(null);
+      setFlame(null);
+      setRole(null);
+      setCreationDate(null);
     }
   };
 
   const fetchUser = async () => {
     if (!token) return;
-    const res = await fetch('http://localhost:8080/api/users/me', {
+    const res = await fetch(`${API_URL}/api/users/me`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,

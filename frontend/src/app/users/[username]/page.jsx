@@ -16,12 +16,13 @@ export default function UserPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedBio, setEditedBio] = useState("");
   const token = Cookies.get("token");
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   // Fetch user data
   useEffect(() => {
     if (!username) return;
     setLoading(true);
-    fetch(`http://localhost:8080/api/users/get/${username}`, {
+    fetch(`${API_URL}/api/users/get/${username}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +41,7 @@ export default function UserPage() {
   // Check if the user is following this profile
   useEffect(() => {
     if (!user) return;
-    fetch(`http://localhost:8080/api/users/following`, {
+    fetch(`${API_URL}/api/users/following`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +61,7 @@ export default function UserPage() {
   // Check if the user is blocking this profile
   useEffect(() => {
     if (!user) return;
-    fetch(`http://localhost:8080/api/users/block`, {
+    fetch(`${API_URL}/api/users/block`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +80,7 @@ export default function UserPage() {
 
   // Handle follow/unfollow
   const handleFollow = async () => {
-    await fetch(`http://localhost:8080/api/users/follow/${user.username}`, {
+    await fetch(`${API_URL}/api/users/follow/${user.username}`, {
       method: isFollowing ? "DELETE" : "POST",
       headers: {
         "Content-Type": "application/json",
@@ -96,7 +97,7 @@ export default function UserPage() {
 
   // Handle block/unblock
   const handleBlock = async () => {
-    await fetch(`http://localhost:8080/api/users/block/${user.username}`, {
+    await fetch(`${API_URL}/api/users/block/${user.username}`, {
       method: isBlocking ? "DELETE" : "POST",
       headers: {
         "Content-Type": "application/json",
@@ -122,7 +123,7 @@ export default function UserPage() {
   const saveEdit = async () => {
     try {
       const token = Cookies.get('token');
-      const res = await fetch(`http://localhost:8080/api/users/me/bio`, {
+      const res = await fetch(`${API_URL}/api/users/me/bio`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

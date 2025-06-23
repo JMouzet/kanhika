@@ -13,12 +13,13 @@ export default function EditAccountPage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const { refreshUser } = useUser();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = Cookies.get('token');
-        const res = await fetch('http://localhost:8080/api/users/me', {
+        const res = await fetch(`${API_URL}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -52,7 +53,7 @@ export default function EditAccountPage() {
 
     try {
       const token = Cookies.get('token');
-      const res = await fetch('http://localhost:8080/api/users/me/username', {
+      const res = await fetch(`${API_URL}/api/users/me/username`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +96,7 @@ export default function EditAccountPage() {
     
     try {
       const token = Cookies.get('token');
-      const res = await fetch('http://localhost:8080/api/users/me/email', {
+      const res = await fetch(`${API_URL}/api/users/me/email`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +134,7 @@ export default function EditAccountPage() {
 
     try {
       const token = Cookies.get('token');
-      const res = await fetch('http://localhost:8080/api/users/me/password', {
+      const res = await fetch(`${API_URL}/api/users/me/password`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

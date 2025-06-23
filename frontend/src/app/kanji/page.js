@@ -14,6 +14,7 @@ export default function LearnPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const token = Cookies.get('token');
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   useEffect(() => {
     const fetchKanjiData = async () => {
@@ -24,7 +25,7 @@ export default function LearnPage() {
         params.append('page', currentPage || 1);
 
         const response = await fetch(
-          `http://localhost:8080/api/kanjis/search${
+          `${API_URL}/api/kanjis/search${
             search ? '/' + search : ''
           }?${params.toString()}`,
           {

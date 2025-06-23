@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   useEffect(() => {
     const input = document.querySelector('input[name="username"]');
@@ -28,7 +29,7 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:8080/api/auth/login', {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,8 +45,9 @@ export default function LoginPage() {
 
       Cookies.set('token', data.token, {
         path: '/',
-        secure: false,
+        secure: true,
         sameSite: 'Strict',
+        domain: process.env.NEXT_PUBLIC_FRONTEND_DOMAIN
       });
 
       window.location.href = '/main';

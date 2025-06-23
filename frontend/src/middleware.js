@@ -6,6 +6,7 @@ const ALWAYS_ALLOW = ['/_next', '/favicon.ico', '/robots.txt', '/api'];
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('token')?.value;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   if (ALWAYS_ALLOW.some((prefix) => pathname.startsWith(prefix))) {
     return NextResponse.next();
@@ -23,7 +24,7 @@ export async function middleware(request) {
   }
 
   try {
-    const verifyRes = await fetch('http://localhost:8080/api/users/me', {
+    const verifyRes = await fetch(`${API_URL}/api/users/me`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,

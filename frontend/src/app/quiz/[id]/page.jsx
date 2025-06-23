@@ -12,12 +12,13 @@ export default function QuizPage() {
   const [feedback, setFeedback] = useState(null);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   const token = Cookies.get('token');
 
   const fetchQuestion = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/quizzes/${id}/questions`, {
+      const res = await fetch(`${API_URL}/api/quizzes/${id}/questions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -39,7 +40,7 @@ export default function QuizPage() {
     setSelected(choice);
 
     try {
-      const res = await fetch(`http://localhost:8080/api/quizzes/${id}/questions/${question.id}`, {
+      const res = await fetch(`${API_URL}/api/quizzes/${id}/questions/${question.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
